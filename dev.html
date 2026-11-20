@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Office • Arena Clash 3D</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b10;
+      --card: #111622;
+      --border: rgba(245, 158, 11, 0.25);
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.12), transparent 60%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 1020px; margin: 0 auto; padding: 2rem 1.25rem; }
+
+    /* Login Card */
+    .login-wrap {
+      display: flex; align-items: center; justify-content: center; min-height: 85vh;
+    }
+    .login-card {
+      width: 100%; max-width: 400px; padding: 2.25rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .badge {
+      display: inline-block; padding: 0.3rem 0.75rem; margin-bottom: 0.75rem;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--gold-light); background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 999px;
+    }
+    h1, h2 { margin: 0 0 0.5rem; }
+    .muted { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #cbd5e1; margin-bottom: 0.35rem; }
+    input, select {
+      width: 100%; padding: 0.75rem 0.9rem; margin-bottom: 1rem;
+      background: #07090f; color: var(--text); border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 10px; font-size: 0.95rem; outline: none;
+    }
+    input:focus, select:focus { border-color: var(--gold); }
+    .btn {
+      padding: 0.8rem 1.2rem; font-weight: 800; font-size: 0.88rem; letter-spacing: 0.04em;
+      text-transform: uppercase; border: none; border-radius: 10px; cursor: pointer;
+    }
+    .btn-gold {
+      width: 100%; color: #090b10;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    }
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06); color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .btn-danger {
+      padding: 0.4rem 0.7rem; font-size: 0.75rem;
+      background: rgba(239, 68, 68, 0.15); color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; cursor: pointer;
+    }
+    .error-msg { color: #f87171; font-size: 0.88rem; margin-top: 0.75rem; min-height: 1.2em; }
+
+    /* Dashboard */
+    .topbar {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      gap: 1rem; margin-bottom: 1.75rem; padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem 1.25rem;
+    }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.06em; }
+    .stat-value { font-size: 1.85rem; font-weight: 900; color: var(--gold-light); margin-top: 0.25rem; }
+
+    .toolbar {
+      display: grid; grid-template-columns: 1fr 200px; gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .table-card {
+      background: var(--card); border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px; overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); font-size: 0.92rem; }
+    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: rgba(0, 0, 0, 0.25); }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .pill {
+      display: inline-block; padding: 0.22rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+      background: rgba(245, 158, 11, 0.14); color: var(--gold-light);
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 600px) { .toolbar { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN VIEW -->
+  <div id="login-view" class="login-wrap">
+    <div class="login-card">
+      <div class="badge">DEV OFFICE • RESTRICTED</div>
+      <h2>Developer Login</h2>
+      <p class="muted">Sign in to inspect Arena Clash 3D waitlist applications.</p>
+      <form id="login-form">
+        <label for="dev-email">Admin Email</label>
+        <input type="email" id="dev-email" required placeholder="dev@example.com" />
+        <label for="dev-password">Password</label>
+        <input type="password" id="dev-password" required placeholder="••••••••" />
+        <button type="submit" class="btn btn-gold" id="login-btn">Enter Office</button>
+      </form>
+      <p id="login-error" class="error-msg"></p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashboard-view" class="container hidden">
+    <div class="topbar">
+      <div>
+        <div class="badge">ARENA CLASH 3D • DEV OFFICE</div>
+        <h1>Waitlist Applications</h1>
+      </div>
+      <div class="actions">
+        <a href="./index.html" class="btn btn-ghost" style="text-decoration:none;">← Back to Site</a>
+        <button id="refresh-btn" class="btn btn-ghost">Refresh</button>
+        <button id="export-btn" class="btn btn-ghost">Export CSV</button>
+        <button id="logout-btn" class="btn btn-danger" style="padding:0.8rem 1rem;">Log Out</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Applications</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PC (Windows)</div>
+        <div class="stat-value" id="stat-pc">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">macOS</div>
+        <div class="stat-value" id="stat-mac">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Web Demo</div>
+        <div class="stat-value" id="stat-web">0</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" id="search-input" placeholder="Search by email or fighter tag..." style="margin:0;" />
+      <select id="platform-filter" style="margin:0;">
+        <option value="ALL">All Platforms</option>
+        <option value="PC (Windows)">PC (Windows)</option>
+        <option value="macOS">macOS</option>
+        <option value="Web Demo">Web Demo</option>
+      </select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Email</th>
+            <th>Fighter Tag</th>
+            <th>Platform</th>
+            <th>Registered At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="waitlist-tbody">
+          <tr><td colspan="6" style="text-align:center;color:#94a3b8;">Loading applications...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://yxgzkryqayqqhlzncokv.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_0NP_gp5n8e8Nv_biormNxA_bpiSdPL7'; // Paste your sb_publishable_... key here
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginView = document.getElementById('login-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const tbody = document.getElementById('waitlist-tbody');
+    const searchInput = document.getElementById('search-input');
+    const platformFilter = document.getElementById('platform-filter');
+
+    let allRows = [];
+
+    async function checkSession() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        loginView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        loadApplications();
+      } else {
+        dashboardView.classList.add('hidden');
+        loginView.classList.remove('hidden');
+      }
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.textContent = '';
+      const email = document.getElementById('dev-email').value.trim();
+      const password = document.getElementById('dev-password').value;
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        loginError.textContent = error.message;
+        return;
+      }
+      checkSession();
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      checkSession();
+    });
+
+    async function loadApplications() {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">Loading...</td></tr>';
+      const { data, error } = await sb
+        .from('waitlist')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:#f87171;">Error: ${error.message}</td></tr>`;
+        return;
+      }
+
+      allRows = data || [];
+      updateStats();
+      renderTable();
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = allRows.length;
+      document.getElementById('stat-pc').textContent = allRows.filter(r => r.platform === 'PC (Windows)').length;
+      document.getElementById('stat-mac').textContent = allRows.filter(r => r.platform === 'macOS').length;
+      document.getElementById('stat-web').textContent = allRows.filter(r => r.platform === 'Web Demo').length;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function renderTable() {
+      const q = searchInput.value.trim().toLowerCase();
+      const plat = platformFilter.value;
+
+      const filtered = allRows.filter(r => {
+        const matchesPlat = plat === 'ALL' || r.platform === plat;
+        const matchesText = !q ||
+          (r.email && r.email.toLowerCase().includes(q)) ||
+          (r.nickname && r.nickname.toLowerCase().includes(q));
+        return matchesPlat && matchesText;
+      });
+
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">No applications found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((row, idx) => `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${escapeHtml(row.email)}</strong></td>
+          <td>${row.nickname ? escapeHtml(row.nickname) : '<span style="color:#64748b;">—</span>'}</td>
+          <td><span class="pill">${escapeHtml(row.platform)}</span></td>
+          <td style="color:#94a3b8;">${new Date(row.created_at).toLocaleString()}</td>
+          <td><button class="btn-danger" onclick="deleteEntry('${row.id}')">Remove</button></td>
+        </tr>
+      `).join('');
+    }
+
+    window.deleteEntry = async (id) => {
+      if (!confirm('Remove this application from the waitlist?')) return;
+      const { error } = await sb.from('waitlist').delete().eq('id', id);
+      if (error) return alert('Delete failed: ' + error.message);
+      allRows = allRows.filter(r => r.id !== id);
+      updateStats();
+      renderTable();
+    };
+
+    document.getElementById('export-btn').addEventListener('click', () => {
+      if (!allRows.length) return alert('No data to export.');
+      const csv = [
+        ['Email', 'Fighter Tag', 'Platform', 'Registered At'],
+        ...allRows.map(r => [r.email, r.nickname || '', r.platform, r.created_at])
+      ].map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `arena-clash-waitlist-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    searchInput.addEventListener('input', renderTable);
+    platformFilter.addEventListener('change', renderTable);
+    document.getElementById('refresh-btn').addEventListener('click', loadApplications);
+
+    checkSession();
+  </script>
+</body>
+</html>
