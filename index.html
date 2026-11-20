@@ -611,6 +611,78 @@
         </div>
     </div>
 
+
+<section id="waitlist" class="waitlist-section">
+  <h2>Join the Release Waitlist</h2>
+  <p>Get notified when the full build drops and reserve your preferred platform.</p>
+
+  <form id="waitlist-form">
+    <input
+      type="email"
+      id="waitlist-email"
+      placeholder="you@example.com"
+      required
+    />
+    <input
+      type="text"
+      id="waitlist-nickname"
+      placeholder="Player tag / nickname (optional)"
+      maxlength="24"
+    />
+    <select id="waitlist-platform">
+      <option value="PC (Windows)">PC (Windows)</option>
+      <option value="macOS">macOS</option>
+      <option value="Web Demo">Web Demo</option>
+    </select>
+    <button type="submit" id="waitlist-btn">Notify Me on Release</button>
+  </form>
+
+  <p id="waitlist-status" aria-live="polite"></p>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://yxgzkryqayqqhlzncokv.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY'; // Paste your publishable or anon key here
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const form = document.getElementById('waitlist-form');
+  const statusEl = document.getElementById('waitlist-status');
+  const submitBtn = document.getElementById('waitlist-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('waitlist-email').value.trim().toLowerCase();
+    const nickname = document.getElementById('waitlist-nickname').value.trim() || null;
+    const platform = document.getElementById('waitlist-platform').value;
+
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Registering your spot...';
+
+    const { error } = await supabaseClient
+      .from('waitlist')
+      .insert([{ email, nickname, platform }]);
+
+    submitBtn.disabled = false;
+
+    if (error) {
+      // Postgres error code 23505 = email already exists in the unique column
+      if (error.code === '23505') {
+        statusEl.textContent = 'This email is already on the release waitlist.';
+      } else {
+        statusEl.textContent = `Could not register: ${error.message}`;
+      }
+      return;
+    }
+
+    form.reset();
+    statusEl.textContent = "You're on the list! We'll notify you when the game releases.";
+  });
+</script>
+
+
+
     <!-- Interactive 3D-Perspective Arena Mini-Game Engine -->
     <script>
         const canvas = document.getElementById('arenaCanvas');
