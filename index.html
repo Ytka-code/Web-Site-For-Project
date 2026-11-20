@@ -567,6 +567,236 @@
         </div>
     </footer>
 
+    <section id="waitlist" class="ac-waitlist-wrap">
+  <div class="ac-waitlist-card">
+    <div class="ac-waitlist-badge">EARLY ACCESS &bull; FULL BUILD</div>
+    <h2 class="ac-waitlist-title">JOIN THE RELEASE <span>WAITLIST</span></h2>
+    <p class="ac-waitlist-subtitle">
+      Get notified the moment the full Godot 3D build drops and reserve your preferred platform.
+    </p>
+
+    <form id="waitlist-form" class="ac-waitlist-form">
+      <div class="ac-input-group">
+        <label for="waitlist-email">Email Address *</label>
+        <input
+          type="email"
+          id="waitlist-email"
+          placeholder="you@example.com"
+          required
+        />
+      </div>
+
+      <div class="ac-input-group">
+        <label for="waitlist-nickname">Fighter Tag (Optional)</label>
+        <input
+          type="text"
+          id="waitlist-nickname"
+          placeholder="e.g. Knox"
+          maxlength="24"
+        />
+      </div>
+
+      <div class="ac-input-group">
+        <label for="waitlist-platform">Platform</label>
+        <select id="waitlist-platform">
+          <option value="PC (Windows)">PC (Windows)</option>
+          <option value="macOS">macOS</option>
+          <option value="Web Demo">Web Demo</option>
+        </select>
+      </div>
+
+      <button type="submit" id="waitlist-btn" class="ac-waitlist-btn">
+        Notify Me on Release
+      </button>
+    </form>
+
+    <p id="waitlist-status" class="ac-waitlist-status" aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  .ac-waitlist-wrap {
+    padding: 4rem 1.25rem;
+    background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.14), transparent 65%), #090b10;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .ac-waitlist-card {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(145deg, #111622 0%, #0b0e17 100%);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.08);
+    text-align: center;
+  }
+
+  .ac-waitlist-badge {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 999px;
+  }
+
+  .ac-waitlist-title {
+    margin: 0 0 0.6rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    color: #f8fafc;
+  }
+
+  .ac-waitlist-title span {
+    color: #f59e0b;
+  }
+
+  .ac-waitlist-subtitle {
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: #94a3b8;
+  }
+
+  .ac-waitlist-form {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 0.9fr;
+    gap: 0.9rem;
+    text-align: left;
+  }
+
+  .ac-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .ac-input-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #cbd5e1;
+  }
+
+  .ac-waitlist-form input,
+  .ac-waitlist-form select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 0.95rem;
+    font-size: 0.95rem;
+    color: #f8fafc;
+    background: #07090f;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .ac-waitlist-form input::placeholder {
+    color: #64748b;
+  }
+
+  .ac-waitlist-form input:focus,
+  .ac-waitlist-form select:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  }
+
+  .ac-waitlist-btn {
+    grid-column: 1 / -1;
+    margin-top: 0.4rem;
+    padding: 0.95rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #090b10;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    transition: transform 0.15s, filter 0.15s;
+  }
+
+  .ac-waitlist-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .ac-waitlist-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .ac-waitlist-status {
+    margin: 1rem 0 0;
+    min-height: 1.4em;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #fbbf24;
+  }
+
+  @media (max-width: 680px) {
+    .ac-waitlist-form {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://yxgzkryqayqqhlzncokv.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY'; // Paste your publishable or anon key here
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const form = document.getElementById('waitlist-form');
+  const statusEl = document.getElementById('waitlist-status');
+  const submitBtn = document.getElementById('waitlist-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('waitlist-email').value.trim().toLowerCase();
+    const nickname = document.getElementById('waitlist-nickname').value.trim() || null;
+    const platform = document.getElementById('waitlist-platform').value;
+
+    submitBtn.disabled = true;
+    statusEl.style.color = '#94a3b8';
+    statusEl.textContent = 'Registering your spot...';
+
+    const { error } = await supabaseClient
+      .from('waitlist')
+      .insert([{ email, nickname, platform }]);
+
+    submitBtn.disabled = false;
+
+    if (error) {
+      statusEl.style.color = '#f87171';
+      if (error.code === '23505') {
+        statusEl.textContent = 'This email is already on the release waitlist.';
+      } else {
+        statusEl.textContent = `Could not register: ${error.message}`;
+      }
+      return;
+    }
+
+    form.reset();
+    statusEl.style.color = '#34d399';
+    statusEl.textContent = "You're on the list! We'll notify you when Arena Clash 3D releases.";
+  });
+</script>
+
     <!-- Download Build & Controls Modal -->
     <div id="download-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-[#131824] border border-white/15 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
@@ -611,75 +841,6 @@
         </div>
     </div>
 
-
-<section id="waitlist" class="waitlist-section">
-  <h2>Join the Release Waitlist</h2>
-  <p>Get notified when the full build drops and reserve your preferred platform.</p>
-
-  <form id="waitlist-form">
-    <input
-      type="email"
-      id="waitlist-email"
-      placeholder="you@example.com"
-      required
-    />
-    <input
-      type="text"
-      id="waitlist-nickname"
-      placeholder="Player tag / nickname (optional)"
-      maxlength="24"
-    />
-    <select id="waitlist-platform">
-      <option value="PC (Windows)">PC (Windows)</option>
-      <option value="macOS">macOS</option>
-      <option value="Web Demo">Web Demo</option>
-    </select>
-    <button type="submit" id="waitlist-btn">Notify Me on Release</button>
-  </form>
-
-  <p id="waitlist-status" aria-live="polite"></p>
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = 'https://yxgzkryqayqqhlzncokv.supabase.co';
-  const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY'; // Paste your publishable or anon key here
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const form = document.getElementById('waitlist-form');
-  const statusEl = document.getElementById('waitlist-status');
-  const submitBtn = document.getElementById('waitlist-btn');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('waitlist-email').value.trim().toLowerCase();
-    const nickname = document.getElementById('waitlist-nickname').value.trim() || null;
-    const platform = document.getElementById('waitlist-platform').value;
-
-    submitBtn.disabled = true;
-    statusEl.textContent = 'Registering your spot...';
-
-    const { error } = await supabaseClient
-      .from('waitlist')
-      .insert([{ email, nickname, platform }]);
-
-    submitBtn.disabled = false;
-
-    if (error) {
-      // Postgres error code 23505 = email already exists in the unique column
-      if (error.code === '23505') {
-        statusEl.textContent = 'This email is already on the release waitlist.';
-      } else {
-        statusEl.textContent = `Could not register: ${error.message}`;
-      }
-      return;
-    }
-
-    form.reset();
-    statusEl.textContent = "You're on the list! We'll notify you when the game releases.";
-  });
-</script>
 
 
 
